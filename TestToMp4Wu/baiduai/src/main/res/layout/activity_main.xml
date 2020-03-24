@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:text="离线录制视频：离线唤醒，可在离线使用语音唤醒，唤醒词：我同意了、听清楚了、我已确认"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_wakeup"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:text="离线录制视频" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_marginTop="20dp"
+        android:text="在线录制视频：在线识别，录制视频时，网络请勿中断，网速不能太差"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_recog"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
+        android:text="在线录制视频" />
+</LinearLayout>
