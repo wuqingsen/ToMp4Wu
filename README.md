@@ -17,3 +17,4 @@ TestToMp4-master 这是录制音视频流以及合成为mp4的demo，里面在�
 
 #### 博客地址
 https://blog.csdn.net/wuqingsen1/article/details/103799520
+https://blog.csdn.net/wuqingsen1/article/details/111165018
