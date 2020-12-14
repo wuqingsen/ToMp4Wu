@@ -31,8 +31,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     Camera camera;
     SurfaceHolder surfaceHolder;
-    int width = 1920;
-    int height = 1080;
+    int width = 1280;
+    int height = 720;
+    public static MyClass myClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         surfaceView = (SurfaceView) findViewById(R.id.surface_view);
         startStopButton = (Button) findViewById(R.id.startStop);
 
+        myClass = new MyClass(MainActivity.this);
         startStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
      * 打开摄像头
      */
     private void startCamera() {
-        camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
-        camera.setDisplayOrientation(90);
+        camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+        camera.setDisplayOrientation(0);
         Camera.Parameters parameters = camera.getParameters();
         parameters.setPreviewFormat(ImageFormat.NV21);
 

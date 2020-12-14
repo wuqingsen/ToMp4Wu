@@ -1,14 +1,9 @@
 package com.example.liuyan.testtomp4;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.util.Log;
-
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
@@ -19,8 +14,8 @@ import java.util.Vector;
  */
 public class VideoEncoderThread extends Thread {
 
-    public static final int IMAGE_HEIGHT = 720;
-    public static final int IMAGE_WIDTH = 1280;
+    public static final int IMAGE_HEIGHT = 1080;
+    public static final int IMAGE_WIDTH = 1920;
 
 
     // 编码相关参数
@@ -79,7 +74,7 @@ public class VideoEncoderThread extends Thread {
      * 开始视频编码
      */
     private void startMediaCodec() throws IOException {
-        mMediaCodec = MediaCodec.createEncoderByType("video/avc");
+        mMediaCodec =  MediaCodec.createEncoderByType("video/avc");
         mMediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         mMediaCodec.start();
         isStart = true;
@@ -133,7 +128,7 @@ public class VideoEncoderThread extends Thread {
                 byte[] bytes = this.frameBytes.remove(0);
                 Log.e("=====视频录制", "解码视频数据:" + bytes.length);
                 try {
-                    encodeFrame(dealByte(bytes));
+                    encodeFrame(bytes);
                 } catch (Exception e) {
                     Log.e("=====视频录制", "解码视频(Video)数据 失败");
                     e.printStackTrace();
@@ -145,37 +140,6 @@ public class VideoEncoderThread extends Thread {
 
     public void exit() {
         isExit = true;
-    }
-
-    /**
-     * 将拿到的预览帧数据转为bitmap添加水印 再讲bitmap转为帧数据
-     * @param dst 预览的帧数据
-     * @return
-     */
-    private byte[] dealByte(byte[] dst) {
-//        YuvImage image = new YuvImage(dst, ImageFormat.NV21, CameraSettings.SRC_IMAGE_WIDTH,CameraSettings.SRC_IMAGE_HEIGHT, null)
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        image.compressToJpeg(new Rect(0, 0, CameraSettings.SRC_IMAGE_WIDTH,CameraSettings.SRC_IMAGE_HEIGHT), 100, stream);
-//        Bitmap bitmapAll = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
-
-        Bitmap bitmapAll = MainActivity.myClass.nv21ToBitmap(dst, mWidth,
-                mHeight);
-
-        Bitmap bitmapAllNew = bitmapAll.copy(Bitmap.Config.ARGB_8888, true);
-        Canvas canvas = new Canvas(bitmapAllNew);
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(40);
-        long a = System.currentTimeMillis();
-        String b = "北京市东城区雍和宫";
-        canvas.drawText(a + "", 100, 100, paint);
-        canvas.drawText(b, 100, 300, paint);
-        byte[] newBytes = SYUtils.bitmapToNv21(bitmapAllNew, mWidth, mHeight);
-        if (newBytes != null) {
-            return newBytes;
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -205,7 +169,7 @@ public class VideoEncoderThread extends Thread {
         int outputBufferIndex = mMediaCodec.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
 
         //FORMAT_CHANGEED < 0 所以需要一个 ||
-        while (outputBufferIndex >= 0 || outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+        while(outputBufferIndex >= 0 || outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED){
             if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 //添加轨道的好时机，只有一次
                 MediaFormat newFormat = mMediaCodec.getOutputFormat();
@@ -213,7 +177,8 @@ public class VideoEncoderThread extends Thread {
                 if (mediaMuxerRunnable != null) {
                     mediaMuxerRunnable.addTrackIndex(MediaMuxerThread.TRACK_VIDEO, newFormat);
                 }
-            } else {
+            }
+            else {
                 ByteBuffer outputBuffer = outputBuffers[outputBufferIndex];
                 if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
                     mBufferInfo.size = 0;

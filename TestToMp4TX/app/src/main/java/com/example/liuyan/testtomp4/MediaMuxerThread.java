@@ -24,8 +24,8 @@ public class MediaMuxerThread extends Thread {
     private volatile boolean isAudioTrackAdd;
     private int videoTrackIndex = -1;
     private int audioTrackIndex = -1;
-    int width = 1280;
-    int height = 720;
+    int width = 1920;
+    int height = 1080;
     private final Object lock = new Object();
     //单例
     private static MediaMuxerThread mediaMuxerThread;
