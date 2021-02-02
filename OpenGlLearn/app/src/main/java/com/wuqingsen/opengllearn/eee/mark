@@ -1,0 +1,72 @@
+OpenGL简单实用说明
+
+主要内容：三维世界
+
+主要是透视除法的内容，以及如何在二维屏幕上使用w分量创造三维的假象。
+理解了w分量，就学习如何设置透视投影，让我们可以见到三维形式的桌子。
+
+1.添加w分量创建三维视图
+  在渲染器中添加：
+  private static final int BYTES_PER_FLOAT = 4;
+  float[] tableVerticesWithTriangles = {
+    0f, 0f, 1f, 1f, 1f,
+    -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+    0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+    0.5f,  0.5f, 0.7f, 0.7f, 0.7f,
+    -0.5f,  0.5f, 0.7f, 0.7f, 0.7f,
+    -0.5f, -0.5f, 0.7f, 0.7f, 0.7f,
+
+    // Line 1
+    -0.5f, 0f, 1f, 0f, 0f,
+    0.5f, 0f, 1f, 0f, 0f,
+
+    // Mallets
+    0f, -0.25f, 0f, 0f, 1f,
+    0f,  0.25f, 1f, 0f, 0f
+  }
+
+2.创建 MatrixHelper 工具类
+  #加入 perspectiveM 方法
+  这个方法完成了透视投影的功能。
+
+3.使用 perspectiveM 方法。
+
+  #在 onSurfaceChanged 方法中加入：
+  glViewport(0,0,width,height);
+  MatrixHelper.perspectiveM(projectionMatrix,45,(float)width/(float)height,1f,10f)
+
+  这会用45度的视野创建一个透视投影，这个椎体从 z 值为-1的位置开始，在 z 值为-10的位置结束。
+
+4.利用模型矩阵移动物体
+
+  #在渲染器中声明变量
+  private final float[] modelMatrix = new float[16];
+
+  #在 onSurfaceChanged() 结尾处，加入代码:
+  translateM(modelMatrix,0,0f,0f,-2.5f);
+
+  这样就完成了对桌子在 z 轴上往负方向移动了2个单位；
+
+5.投影矩阵与模型矩阵相乘
+
+  #流程：先将每个顶点乘以这个模型矩阵，完成在 z 轴上的移动，在乘以投影矩阵，这样完成所有工作。
+  那么能否将这个移动矩阵和投影矩阵相乘呢？答案是可以的。在代码中体现如下，在 translateM() 方法后加入如下代码：
+  final float[] temp = new float[16];
+  multiplyMM(temp,0,projectionMatrix,0,modelMatrix,0);
+  System.arraycopy(temp,0,projectionMatrix,0,temp.length);
+
+  multiplyMM() 这个方法将模型矩阵和投影矩阵相乘得到一个最终使用的矩阵 temp,
+  调用 System.arraycopy() 把结果存回 projectionMatrix 中。
+
+6.增加旋转
+
+  现在已经有了一个配置好的投影矩阵和一个可以移动的桌子的模型矩阵，那么接下来就要旋转这个桌子，
+  以便从某个角度观察它。加入代码：
+  rotateM(modelMatrix,0,-60f,1f,0f,0f);
+
+  关于这个方法，参数介绍：
+  rotateM(float[] m, int mOffset, float a, float x, float y, float z)
+  将矩阵m绕轴(x, y, z)旋转角度a。
+
+  这样就把桌子绕x轴旋转了 -60 度。
+

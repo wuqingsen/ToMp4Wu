@@ -1,0 +1,100 @@
+OpenGL简单实用说明
+
+主要内容：顶点和着色器，编译着色器及在屏幕上绘图
+
+1.初始化 GLSurfaceView 和渲染器 Render
+
+###步骤2-7都是在渲染器中的 onSurfaceCreated 调用，步骤8在 onDrawFrame 调用
+
+2.创建着色器，包括顶点着色器(vertex shader)和片段着色器(fragment shader)；
+  simple_vertex_shader 为顶点着色器，simple_fragment_shader 为片段着色器。
+  创建完成读取着色器；读取顶点着色器：
+  TextResourceReader.readTextFileFromResource(context, R.raw.simple_vertex_shader);
+  读取片段着色器：
+  TextResourceReader.readTextFileFromResource(context, R.raw.simple_fragment_shader)
+
+  ###过程：读取顶点数据->执行顶点着色器->组装图元->光栅化图元->执行片段着色器->写入帧缓冲区->显示到屏幕;
+
+  ###两种着色器的说明
+  #顶点着色器生成每个顶点的最终最为，针对每个顶点，他都会执行一次，一旦确定了位置，
+   OpenGL 就可以根据这些顶点的集合组装成点，直线以及三角形。
+  #片段着色器为点，线，三角形的每个片段生成最终的颜色，针对每个片段，它都会执行一次；
+   一个片段类似于屏幕的一个像素，一旦最终颜色生成了，OpenGL把它们写到一块帧缓冲区的内存块中，
+   最后显示到屏幕上。
+
+  ###顶点着色器参数说明：(如simple_vertex_shader.glsl)
+  #attribute
+  attribute 是 OpenGL 中的类型修饰符，只能在顶点着色器中使用，用来表示一些顶点的数据，
+  如：顶点坐标，法线，纹理坐标，顶点颜色等。
+  #vec4
+  vec4 是包含四个分量的向量如果没有是定，默认前三个都为0，最后一个为1。
+  通过 gl_Position 将位置信息传给OpenGL。
+
+  ###顶点着色器必须对gl_Position赋值，OpenGL会把这个值作为当前顶点的最终位置，并把这些顶点组装成点、直线和三角形。
+
+  ###片段着色器参数说明：(如simple_fragment_shader.glsl)
+  precision 是默认精度修饰符。mediump 表示使用中等精度的值，与 float 和 double 相似。
+  在片段着色器中，我们需要对 gl_FragColor 进行赋值，OpenGL 会使用这个颜色作为当前片段的最终颜色。
+
+  最后在渲染器中 onSurfaceCreated 调用读取渲染器的方法。
+
+3.ShaderHelper 中 compileShader() 方法编译顶点着色器和片段着色器
+  compileVertexShader 和 compileFragmentShader 分别为创建顶点着色器和片段着色器。
+  它们都调用了 compileShader 这个方法，方法具体如下：
+
+  #glCerateShader() 创建了一个新的着色器对象，改方法的卫衣参数为一个 TYPE值，可以为
+   GL_VERTEX_SHADER 和 GL_FRAGMENT_SHADER，分别代表编译顶点着色器和片段着色器，该方法
+   返回一个 int 值，这个值可以理解为这个着色器对象的指针，也就是该着色器对象的应用，返回0创建失败。
+
+  #glShaderSource() 这个方法将我们刚读取的着色器关联到第一步中创建的着色器对象中。
+
+  #glCompileShader() 这个方法即编译着色器的源码。
+
+  最后在渲染器中 onSurfaceCreated 中调用创建顶点着色器和片段着色器的方法。
+
+4.ShaderHelper 中 linkProgram() 方法将顶点着色器和片段着色器连接到 OpenGL 中。
+
+  #通过 glCreateProgram() 创建一个程序对象，返回值代表该对象的指针 int。
+
+  #通过 glAttachShader() 方法将创建的顶点着色器和片段着色器附加到程序对象中。
+
+  #通过 glLinkProgram() 将着色器和对象连接起来，连接成功才可以使用该对象。
+
+  #通过 glGetProgramiv() 方法判断连接状态。
+
+  最后在渲染器中 onSurfaceCreated 调用连接着色器的方法。
+
+5.ShaderHelper 中 glUseProgram() 验证该对象是否可用
+
+  在渲染器中 onSurfaceCreated 调用 glUseProgram() 验证该对象是否可用。
+
+6.对着色器中的变量进行赋值
+
+  #获取着色器的指针
+  glGetUniformLocation(program, U_COLOR) 来获取片段着色器 u_Color 对象的指针；
+  glGetAttribLocation（program, A_POSITION）获取 a_Position 获取顶点着色器 a_Position 对象的指针；
+
+  #将数据传入着色器中
+
+  #顶点着色器必须对 a_Position 赋值，片段着色器必须对 u_Color 赋值。
+
+  #vertexData.position(0);//将位置设置在数据的开头处
+
+  #glVertexAttribPointer 指定渲染时索引值为index的顶点属性数组的数据格式和位置(简单理解为定义顶点着色器的参数)
+   参数说明:
+   index:指定要修改的顶点属性的索引值
+   size:指定每个顶点的组件数量，必须为1,2,3或4
+   type:数据中每个组件的数据类型
+   normalized:放呗访问时，固定点数据值是否被归一化(GL_TRUE)或直接转换为固定点值(GL_FALSE)
+   stride:指定连续顶点属性之间的偏移量，为0，则紧密排列在一起
+   pointer:第一个组件在数组的第一个顶点属性中的偏移量，该数组与GL_ARRAY_BUFFER绑定，在缓冲区中
+
+7.指定OpenGL在哪使用顶点数组
+
+  #调用 glEnableVertexAttribArray(aPositionLocation);
+
+8.绘制页面,画桌子;线等
+
+  #调用 glUniform4f 指定位置和颜色
+
+  # glDrawArrays 第一个参数绘制三角形，第二个参数从数组开头开始读取顶点，第三个参数读到第六个点

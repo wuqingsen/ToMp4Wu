@@ -1,0 +1,47 @@
+OpenGL简单实用说明
+
+主要内容：加入正交投影
+
+1.更新着色器，以便它用矩阵变换位置。
+
+  #d_vertex_shader.glsl 更新
+
+  添加 uniform mat4 = u_Matrix;
+  其中添加了一个 u_Matrix ，并把它定位为一个 mat4 类型，意思是这个 uniform 代表了一个 4x4 的
+  矩阵。
+
+  #赋值，表示顶点着色器中的位置信息将被矩阵变换后才展示。
+  gl_Position = u_Matrix * a_Position;
+
+2.在渲染器中更新代码。
+
+  #private static final String U_MATRIX = "u_Matrix";
+  定义了着色器中那个新 uniform 的位置。
+
+  #private final float[] projectionMatrix = new gloat[16];
+  定义一个顶点数据用于存储那个矩阵。
+
+  #pricate int uMatrixLocation;
+  uMatrixLocation = glGetUniformLocation(program,U_MATRIX);
+  定义一个整形来存储矩阵 uniform 的位置。
+
+
+3.更新 onSurfaceChanged()。
+
+  #glViewport()后面添加下面代码
+  final float aspectRatio = width > height ?(float)width/(float)height:(float)height/(float)width;
+
+  if(width>height){
+    Matrix.orthoM(projectionMatrix,0,-aspectRatio,aspectRatio,-1f,1f,-1f,1f);
+  }else{
+    Matrix.orthoM(projectionMatrix,0,-1f.1f,-aspectRatio,aspectRatio,-1f,1f);
+  }
+
+  这段代码会创建一个正交投影矩阵，这个矩阵会把屏幕的当前方向计算在内。首先计算了宽高比，
+  它会只用宽高中的较大值初一较小值，所以不管横屏还是竖屏，这个值都是一样的。然后调用
+  orthoM() 方法，在横屏模式下，我们会宽展宽度的坐标，以达到在横竖屏上都显示正常的效果。
+
+  #在 onDrawFrame() 中，在 glClear() 之后调用下面代码
+  glUniformMatrix4fv(uMatrixLocation,1,false,projectionMatrix,0);
+  将刚刚定义的矩阵传递给着色器。
+

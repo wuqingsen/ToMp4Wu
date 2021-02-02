@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TestToMp4-master.iml" filepath="$PROJECT_DIR$/TestToMp4-master.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/TestToMp4-master.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/TestToMp4-master.app.iml" />
     </modules>
   </component>
 </project>
