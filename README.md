@@ -2,6 +2,8 @@
 
 #### 介绍
 TestToMp4-master 这是录制音视频流以及合成为mp4的demo，里面在录制视频的过程中添加了水印；
+OpenGlRecordMp4Wu和OpenGlRecordVideoWu 录制音频和视频合成为mp4，用到opengl添加水印，打开会闪退，里面要手动授予权限，Android10以上要修改mp4文件保存位置。
+其它的项目是学习的记录。
 
 #### 软件架构
 录制视频用的分为录制音频流和视频流；
