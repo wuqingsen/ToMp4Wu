@@ -1,4 +1,4 @@
-package com.wuqingsen.opengllearn.ggg;
+package com.wuqingsen.opengllearn.ggg.utils;
 
 public class MatrixHelper {
   public static void perspectiveM(float[] m, float yFovInDegrees, float aspect, float n, float f) {

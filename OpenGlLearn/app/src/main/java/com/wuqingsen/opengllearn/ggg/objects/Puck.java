@@ -1,38 +1,29 @@
 package com.wuqingsen.opengllearn.ggg.objects;
 
-import android.opengl.GLES20;
-
 import com.wuqingsen.opengllearn.ggg.data.VertexArray;
-import com.wuqingsen.opengllearn.ggg.data.Constands;
 import com.wuqingsen.opengllearn.ggg.programs.ColorShaderProgram;
 import com.wuqingsen.opengllearn.ggg.utils.Geometry;
 
 import java.util.List;
 
 /**
- * wuqingsen on 2021/2/2
+ * wuqingsen on 2021/2/7
  * Mailbox:1243411677@qq.com
- * annotation:木槌
+ * annotation:冰球
  */
-public class Mallet {
+public class Puck {
     private static final int POSITION_COMPONENT_COUNT = 3;
-
-    public final float radius;
-    public final float height;
-
+    public final float radius, height;
     private final VertexArray vertexArray;
-
     private final List<ObjectBuilder.DrawCommand> drawList;
 
-    public Mallet(float radius, float height, int numPointsAroundMallet) {
-        ObjectBuilder.GeneratedData generatedData =
-                ObjectBuilder.createMallet(new Geometry.Point(0f, 0f, 0f)
-                        , radius, height, numPointsAroundMallet);
-
+    public Puck(float radius, float height, int numPointsAroundPuck) {
+        ObjectBuilder.GeneratedData generatedData = ObjectBuilder.createPuck(
+                new Geometry.Cylinder(new Geometry.Point(0f, 0f, 0f), radius, height), numPointsAroundPuck);
         this.radius = radius;
         this.height = height;
 
-        vertexArray = new VertexArray(generatedData.vertexData);
+        vertexArray = new VertexArray((generatedData.vertexData));
         drawList = generatedData.drawList;
     }
 
@@ -46,6 +37,4 @@ public class Mallet {
             drawCommand.draw();
         }
     }
-
-
 }

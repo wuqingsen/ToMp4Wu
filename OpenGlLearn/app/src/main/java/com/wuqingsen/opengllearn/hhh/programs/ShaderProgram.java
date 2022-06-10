@@ -1,10 +1,10 @@
-package com.wuqingsen.opengllearn.ggg.programs;
+package com.wuqingsen.opengllearn.hhh.programs;
 
 import android.content.Context;
 import android.opengl.GLES20;
 
-import com.wuqingsen.opengllearn.ggg.utils.ShaderHelper;
-import com.wuqingsen.opengllearn.ggg.utils.TextResourceReader;
+import com.wuqingsen.opengllearn.hhh.utils.ShaderHelper;
+import com.wuqingsen.opengllearn.hhh.utils.TextResourceReader;
 
 /**
  * wuqingsen on 2021/1/26

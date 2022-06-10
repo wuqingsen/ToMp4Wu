@@ -1,4 +1,4 @@
-package com.wuqingsen.opengllearn.ggg.programs;
+package com.wuqingsen.opengllearn.hhh.programs;
 
 import android.content.Context;
 import android.opengl.GLES20;
@@ -16,7 +16,7 @@ public class ColorShaderProgram extends ShaderProgram {
     private final int uColorLocation;
 
     public ColorShaderProgram(Context context) {
-        super(context, R.raw.g_vertex_shader, R.raw.g_fragment_shader);
+        super(context, R.raw.h_vertex_shader, R.raw.h_fragment_shader);
         uMatrixLocation = GLES20.glGetUniformLocation(program, U_MATRIX);
 
         aPositionLocation = GLES20.glGetAttribLocation(program, A_POSITION);

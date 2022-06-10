@@ -119,16 +119,125 @@ OpenGL简单实用说明
   我们使用了同前面生产圆周顶点一样的算法，只是这次为圆周上的每个点生成了两个顶点。一个是圆柱顶部，另一个
   是圆柱底部。前面两个点的位置重复两次以使这个圆柱体闭合。使用
   glDrawArrays(GL_TRIANGLE_STRIP,startVertex,numVertices);告诉 OpenGL 绘制一个三角形带。
+
   现在我们就可以用两个圆柱体来构成一个木槌，具体请参见 createMallet 这个方法。
 
-  
+  接下来更新一些物体类，具体参见 Puck 以及 Mallet 类。下一步更新着色器，我们用每个顶点的位置而不是每个顶点
+  的颜色定义了球和木槌，因此不得不把颜色作为一个 uniform 传递进去，在 ShaderProgram.java 中定义一个新的
+  常量 U_COLOR 。然后加入定义：
+  ==============================代码开始=======================================
+  private final int uColorLocation;
 
+  public ColorShaderProgram(Context context) {
+      ...
+      uColorLocation = glGetUniformLocation(program, U_COLOR);
+      ...
+  }
 
+  public void setUniforms(float[] matrix, float r, float g, float b) {
+      glUniformMatrix4fv(uMatrixLocation, 1, false, matrix, 0);
+      glUniform4f(uColorLocation, r, g, b, 1f);
+  }
+  ==============================代码结束=======================================
 
+  我们还需要更新着色器，以便接受传递进来的参数：
+  g_vertex_shader.glsl
+  ==============================代码开始=======================================
+  uniform mat4 u_Matrix;
+  attribute vec4 a_Position;
+  void main()
+  {
+      gl_Position = u_Matrix * a_Position;
+  }
+  ==============================代码结束=======================================
 
+  g_fragment_shader.glsl
+  ==============================代码开始=======================================
+  precision mediump float;
 
+  uniform vec4 u_Color;
 
+  void main()
+  {
+      gl_FragColor = u_Color;
+  }
+  ==============================代码结束=======================================
 
+  接下来初始化新矩阵以及更新 onDrawFrame 方法：
+  ==============================代码开始=======================================
+  @Override public void onSurfaceChanged(GL10 glUnused, int width, int height) {
+      // Set the OpenGL viewport to fill the entire surface.
+      glViewport(0, 0, width, height);
+      MatrixHelper.perspectiveM(projectionMatrix, 45, (float) width
+          / (float) height, 1f, 10f);
+      setLookAtM(viewMatrix, 0, 0f, 1.2f, 2.2f, 0f, 0f, 0f, 0f, 1f, 0f);
+  }
+  ==============================代码结束=======================================
+  前两个方法在前面已经介绍过了，让我们看到这个 setLookAtM 方法，调用这个方法时，把眼睛设为(0,1.2,2.2)，
+  这意味着眼睛的位置在 x-z 平面上方的1.2个单位，并向后2.2个单位。换句话说，场景中的所有东西都出现在你
+  下面 1.2 个单位和你前面 2.2 个单位的地方。把中心设为（0,0,0），以为这你将向下看你前面的原点，
+  并把指向设为（0,1,0），以为着你的头是笔直向上的。
+
+  最后，让我们更新一下 onDrawFrame 作如下更改：
+  ==============================代码开始=======================================
+  @Override public void onDrawFrame(GL10 glUnused) {
+     // Clear the rendering surface.
+     glClear(GL_COLOR_BUFFER_BIT);
+
+     // Multiply the view and projection matrices together.
+     multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+
+     // Draw the table.
+     positionTableInScene();
+     textureProgram.useProgram();
+     textureProgram.setUniforms(modelViewProjectionMatrix, texture);
+     table.bindData(textureProgram);
+     table.draw();
+
+     // Draw the mallets.
+     positionObjectInScene(0f, mallet.height / 2f, -0.4f);
+     colorProgram.useProgram();
+     colorProgram.setUniforms(modelViewProjectionMatrix, 1f, 0f, 0f);
+     mallet.bindData(colorProgram);
+     mallet.draw();
+
+     positionObjectInScene(0f, mallet.height / 2f, 0.4f);
+     colorProgram.setUniforms(modelViewProjectionMatrix, 0f, 0f, 1f);
+     // Note that we don't have to define the object data twice -- we just
+     // draw the same mallet again but in a different position and with a
+     // different color.
+     mallet.draw();
+
+     // Draw the puck.
+     positionObjectInScene(0f, puck.height / 2f, 0f);
+     colorProgram.setUniforms(modelViewProjectionMatrix, 0.8f, 0.8f, 1f);
+     puck.bindData(colorProgram);
+     puck.draw();
+  }
+  ==============================代码结束=======================================
+
+  这段代码大部分与上一章相同，但是有一些关键的区别，第一点是我们在绘制那些物体之前调用了
+  positionTableInScene 和 positionObjectInScene。让我们看看这两个方法：
+  ==============================代码开始=======================================
+  private void positionTableInScene() {
+      // The table is defined in terms of X & Y coordinates, so we rotate it
+      // 90 degrees to lie flat on the XZ plane.
+      setIdentityM(modelMatrix, 0);
+      rotateM(modelMatrix, 0, -90f, 1f, 0f, 0f);
+      multiplyMM(modelViewProjectionMatrix, 0, viewProjectionMatrix,
+          0, modelMatrix, 0);
+  }
+
+  private void positionObjectInScene(float x, float y, float z) {
+      setIdentityM(modelMatrix, 0);
+      translateM(modelMatrix, 0, x, y, z);
+      multiplyMM(modelViewProjectionMatrix, 0, viewProjectionMatrix,
+          0, modelMatrix, 0);
+  }
+  ==============================代码结束=======================================
+  在 positionTableInScene 中，由于这个桌子是以 x y 坐标定义的，因此要使它平放到地面上，我们需要让它
+  绕 x 轴向后旋转90度。最后通过把 viewProjectionMatrix 和 modelMatrix 相乘将所有的矩阵都合并到一
+  起，通过 modelViewProjectionMatrix 并传输给着色器程序。 positionObjectInScene 也是如此。
 
 
 

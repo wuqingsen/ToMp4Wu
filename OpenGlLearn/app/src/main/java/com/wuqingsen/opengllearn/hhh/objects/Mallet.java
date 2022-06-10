@@ -1,11 +1,8 @@
-package com.wuqingsen.opengllearn.ggg.objects;
+package com.wuqingsen.opengllearn.hhh.objects;
 
-import android.opengl.GLES20;
-
-import com.wuqingsen.opengllearn.ggg.data.VertexArray;
-import com.wuqingsen.opengllearn.ggg.data.Constands;
-import com.wuqingsen.opengllearn.ggg.programs.ColorShaderProgram;
-import com.wuqingsen.opengllearn.ggg.utils.Geometry;
+import com.wuqingsen.opengllearn.hhh.data.VertexArray;
+import com.wuqingsen.opengllearn.hhh.programs.ColorShaderProgram;
+import com.wuqingsen.opengllearn.hhh.utils.Geometry;
 
 import java.util.List;
 

@@ -8,9 +8,12 @@ import android.util.Log;
 
 import com.wuqingsen.opengllearn.R;
 import com.wuqingsen.opengllearn.ggg.objects.Mallet;
+import com.wuqingsen.opengllearn.ggg.objects.Puck;
 import com.wuqingsen.opengllearn.ggg.objects.Table;
 import com.wuqingsen.opengllearn.ggg.programs.ColorShaderProgram;
 import com.wuqingsen.opengllearn.ggg.programs.TextureShaderProgram;
+import com.wuqingsen.opengllearn.ggg.utils.MatrixHelper;
+import com.wuqingsen.opengllearn.ggg.utils.TextureHelper;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -40,6 +43,12 @@ public class GRenderer implements GLSurfaceView.Renderer {
 
     private int texture;
 
+    private final float[] viewMatrix = new float[16];
+    private final float[] viewProjectionMatrix = new float[16];
+    private final float[] modelViewProjectionMatrix = new float[16];
+
+    private Puck puck;
+
     public GRenderer(Context context) {
         this.context = context;
     }
@@ -52,12 +61,13 @@ public class GRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         table = new Table();
-        mallet = new Mallet();
+        mallet = new Mallet(0.08f, 0.15f, 32);
+        puck = new Puck(0.06f, 0.02f, 32);
 
         textureProgram = new TextureShaderProgram(context);
         colorProgram = new ColorShaderProgram(context);
 
-        texture = TextureHelper.loadTexture(context,R.drawable.air_hockey_surface);
+        texture = TextureHelper.loadTexture(context, R.drawable.air_hockey_surface);
     }
 
     /**
@@ -77,13 +87,7 @@ public class GRenderer implements GLSurfaceView.Renderer {
 
         MatrixHelper.perspectiveM(projectionMatrix, 45, (float) width / (float) height, 1f, 10f);
 
-        Matrix.setIdentityM(modelMatrix,0);
-        translateM(modelMatrix,0,0f,0f,-2.5f);
-        rotateM(modelMatrix,0,-60,1f,0f,0f);
-
-        final float[] temp = new float[16];
-        multiplyMM(temp,0,projectionMatrix,0,modelMatrix,0);
-        System.arraycopy(temp,0,projectionMatrix,0,temp.length);
+        Matrix.setLookAtM(viewMatrix, 0, 0f, 1.2f, 2.2f, 0f, 0f, 0f, 0f, 1f, 0f);
     }
 
     /**
@@ -96,15 +100,46 @@ public class GRenderer implements GLSurfaceView.Renderer {
         //清除渲染表面。
         GLES20.glClear(GL_COLOR_BUFFER_BIT);
 
+        //将视图矩阵和投影矩阵相乘。
+        Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+
+        //画桌子
+        positionTableInScene();
         textureProgram.userProgram();
-        textureProgram.setUniforms(projectionMatrix,texture);
+        textureProgram.setUniforms(modelViewProjectionMatrix, texture);
         table.bindData(textureProgram);
         table.draw();
 
+        //画木槌
+        positionObjectInScene(0f, mallet.height / 2f, -0.4f);
         colorProgram.userProgram();
-        colorProgram.setUniforms(projectionMatrix);
+        colorProgram.setUniforms(modelViewProjectionMatrix, 1f, 0f, 0f);
         mallet.bindData(colorProgram);
         mallet.draw();
+
+        positionObjectInScene(0f, mallet.height / 2f, 0.4f);
+        //注意，我们不需要定义对象数据两次——我们只是在不同的位置用不同的颜色再次绘制相同的木槌。
+        colorProgram.setUniforms(modelViewProjectionMatrix, 0f, 0f, 1f);
+        mallet.draw();
+
+        //画冰球
+        positionObjectInScene(0f, puck.height / 2f, 0f);
+        colorProgram.setUniforms(modelViewProjectionMatrix,0.8f,0.8f,1f);
+        puck.bindData(colorProgram);
+        puck.draw();
+    }
+
+    private void positionTableInScene() {
+        //这个表是用X和Y坐标定义的，所以我们将它旋转90度，使它平躺在XZ平面上。
+        Matrix.setIdentityM(modelMatrix, 0);
+        Matrix.rotateM(modelMatrix, 0, -90f, 1f, 0f, 0f);
+        Matrix.multiplyMM(modelViewProjectionMatrix, 0, viewProjectionMatrix, 0, modelMatrix, 0);
+    }
+
+    private void positionObjectInScene(float x, float y, float z) {
+        Matrix.setIdentityM(modelMatrix, 0);
+        Matrix.translateM(modelMatrix, 0, x, y, z);
+        Matrix.multiplyMM(modelViewProjectionMatrix, 0, viewProjectionMatrix, 0, modelMatrix, 0);
     }
 
 }

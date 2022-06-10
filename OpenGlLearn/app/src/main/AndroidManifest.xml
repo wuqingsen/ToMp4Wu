@@ -23,6 +23,7 @@
         <activity android:name=".eee.EActivity"/>
         <activity android:name=".fff.FActivity"/>
         <activity android:name=".ggg.GActivity"/>
+        <activity android:name=".hhh.HActivity"/>
     </application>
 
 </manifest>

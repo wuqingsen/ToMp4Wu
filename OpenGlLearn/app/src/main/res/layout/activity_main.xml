@@ -64,6 +64,13 @@
                 android:text="OpenGL Learning 构建简单物体"
                 android:textAllCaps="false" />
 
+            <Button
+                android:id="@+id/btn_h"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="OpenGL Learning 增加触控"
+                android:textAllCaps="false" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

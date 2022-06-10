@@ -14,10 +14,11 @@ import com.wuqingsen.opengllearn.ddd.DActivity;
 import com.wuqingsen.opengllearn.eee.EActivity;
 import com.wuqingsen.opengllearn.fff.FActivity;
 import com.wuqingsen.opengllearn.ggg.GActivity;
+import com.wuqingsen.opengllearn.hhh.HActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btn_a, btn_b, btn_c, btn_d, btn_e,btn_f,btn_g;
+    Button btn_a, btn_b, btn_c, btn_d, btn_e,btn_f,btn_g,btn_h;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         btn_e = findViewById(R.id.btn_e);
         btn_f = findViewById(R.id.btn_f);
         btn_g = findViewById(R.id.btn_g);
+        btn_h = findViewById(R.id.btn_h);
 
         //简单实用
         btn_a.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +87,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, GActivity.class));
+            }
+        });
+
+        //增加触控
+        btn_h.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, HActivity.class));
             }
         });
     }

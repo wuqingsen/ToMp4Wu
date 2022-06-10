@@ -1,4 +1,4 @@
-package com.wuqingsen.opengllearn.ggg;
+package com.wuqingsen.opengllearn.ggg.utils;
 
 import android.content.Context;
 import android.content.res.Resources;

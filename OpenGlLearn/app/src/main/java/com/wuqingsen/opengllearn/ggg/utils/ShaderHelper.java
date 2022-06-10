@@ -1,4 +1,4 @@
-package com.wuqingsen.opengllearn.ggg;
+package com.wuqingsen.opengllearn.ggg.utils;
 
 import android.opengl.GLES20;
 import android.util.Log;
