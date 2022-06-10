@@ -8,6 +8,7 @@ import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
+import android.util.Log;
 import android.view.Surface;
 
 import com.wuqingsen.openglrecordvideowu.egl.EglHelper;
@@ -88,6 +89,7 @@ public abstract class XYBaseMediaEncoder {
      * @param channelcount  声道数
      */
     public void initEncodec(EGLContext eglContext, String savePath, int width, int height, int sampleRate, int channelcount) {
+        Log.w("wqs", "保存路径:" +savePath);
         this.width = width;
         this.height = height;
         this.eglContext = eglContext;

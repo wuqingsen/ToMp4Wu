@@ -10,6 +10,7 @@ import com.wuqingsen.openglrecordvideowu.listener.OnHandleListener;
 import com.wuqingsen.openglrecordvideowu.utils.AudioRecordUtil;
 import com.wuqingsen.openglrecordvideowu.utils.Constants;
 import com.wuqingsen.openglrecordvideowu.utils.RecordState;
+
 /**
  * @author liuml
  * @explain
@@ -63,7 +64,7 @@ public class XYUtil {
         xyMediaEncodec = XYMediaEncodec.getInstance(context, xycamaryview.getTextureId());
         if (TextUtils.isEmpty(url)) {
             xyMediaEncodec.initEncodec(xycamaryview.getEglContext(),
-                    Constants.fileDir, Constants.ScreenWidth, Constants.ScreenHeight, 44100, 2);
+                    Constants.getFilePath(), Constants.ScreenWidth, Constants.ScreenHeight, 44100, 2);
         } else {
             xyMediaEncodec.initEncodec(xycamaryview.getEglContext(),
                     url, Constants.ScreenWidth, Constants.ScreenHeight, 44100, 2);
