@@ -14,9 +14,6 @@ OpenGlRecordMp4Wu和OpenGlRecordVideoWu 录制音频和视频合成为mp4，用�
 #### 使用说明
 详见具体代码
 
-#### 参与贡献
-吴庆森
-
 #### 博客地址
 https://blog.csdn.net/wuqingsen1/article/details/103799520
 https://blog.csdn.net/wuqingsen1/article/details/111165018
