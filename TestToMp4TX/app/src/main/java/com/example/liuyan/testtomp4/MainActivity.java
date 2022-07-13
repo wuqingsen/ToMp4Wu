@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         checkAVFormat();
         surfaceView = (SurfaceView) findViewById(R.id.surface_view);
         startStopButton = (Button) findViewById(R.id.startStop);
-        initTX();
+//        initTX();
 
         startStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,142 +202,142 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     }
 
     //初始化腾讯
-    private void initTX() {
-        AudioRecognizeRequest.Builder builder = new AudioRecognizeRequest.Builder();
-        // 初始化识别请求
-        final AudioRecognizeRequest audioRecognizeRequest = builder
-//                        .pcmAudioDataSource(new AudioRecordDataSource()) // 设置数据源
-                .pcmAudioDataSource(new AudioRecordDataSource()) // 设置数据源
-                //.templateName(templateName) // 设置模板
-//                        .setHotWordId("")//热词 id。用于调用对应的热词表，如果在调用语音识别服务时，不进行单独的热词 id 设置，自动生效默认热词；如果进行了单独的热词 id 设置，那么将生效单独设置的热词 id。
-                .build();
-
-        // 自定义识别配置
-        final AudioRecognizeConfiguration audioRecognizeConfiguration = new AudioRecognizeConfiguration.Builder()
-                .minAudioFlowSilenceTime(2000) // 语音流识别时的间隔时间
-                .minVolumeCallbackTime(80) // 音量回调时间
-                .sensitive(2.5f)
-                .build();
-
-        credentialProvider = new LocalCredentialProvider("SdXCagX8WKyRny3sXxB9uVq32kGSTYWF");
-        try {
-            aaiClient = new AAIClient(MainActivity.this, 1259627588, "SdXCagX8WKyRny3sXxB9uVq32kGSTYWF", credentialProvider);
-        } catch (ClientException e) {
-            e.printStackTrace();
-            Log.e("wqs初始化", "initTX: " + e.getMessage());
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                aaiClient.startAudioRecognize(audioRecognizeRequest, audioRecognizeResultlistener,
-                        audioRecognizeStateListener, audioRecognizeTimeoutListener,
-                        audioRecognizeConfiguration);
-
-            }
-        }).start();
-
-    }
-
-
-    // 识别结果回调监听器
-    final AudioRecognizeResultListener audioRecognizeResultlistener = new AudioRecognizeResultListener() {
-
-        boolean dontHaveResult = true;
-
-        /**
-         * 返回分片的识别结果
-         * @param request 相应的请求
-         * @param result 识别结果
-         * @param seq 该分片所在语音流的序号 (0, 1, 2...)
-         */
-        @Override
-        public void onSliceSuccess(AudioRecognizeRequest request, AudioRecognizeResult result, int seq) {
-
-            if (dontHaveResult && !TextUtils.isEmpty(result.getText())) {
-                dontHaveResult = false;
-                Date date=new Date();
-                DateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
-                String time=format.format(date);
-                String message = String.format("voice flow order = %d, receive first response in %s, result is = %s", seq, time, result.getText());
-                Log.i(PERFORMANCE_TAG, message);
-            }
-
-            AAILogger.info(logger, "分片on slice success..");
-            AAILogger.info(logger, "分片slice seq = {}, voiceid = {}, result = {}", seq, result.getVoiceId(), result.getText());
-            resMap.put(String.valueOf(seq), result.getText());
-            final String msg = buildMessage(resMap);
-            AAILogger.info(logger, "分片slice msg="+msg);
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    recognizeResult.setText(msg);
-                }
-            });
-
-        }
-
-        /**
-         * 返回语音流的识别结果
-         * @param request 相应的请求
-         * @param result 识别结果
-         * @param seq 该语音流的序号 (1, 2, 3...)
-         */
-        @Override
-        public void onSegmentSuccess(AudioRecognizeRequest request, AudioRecognizeResult result, int seq) {
-            dontHaveResult = true;
-            AAILogger.info(logger, "语音流on segment success");
-            AAILogger.info(logger, "语音流segment seq = {}, voiceid = {}, result = {}", seq, result.getVoiceId(), result.getText());
-            resMap.put(String.valueOf(seq), result.getText());
-            final String msg = buildMessage(resMap);
-            AAILogger.info(logger, "语音流segment msg="+msg);
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    recognizeResult.setText(msg);
-                }
-            });
-        }
-
-        /**
-         * 识别结束回调，返回所有的识别结果
-         * @param request 相应的请求
-         * @param result 识别结果
-         */
-        @Override
-        public void onSuccess(AudioRecognizeRequest request, String result) {
-            AAILogger.info(logger, "识别结束, onSuccess..");
-            AAILogger.info(logger, "识别结束, result = {}", result);
-        }
-
-        /**
-         * 识别失败
-         * @param request 相应的请求
-         * @param clientException 客户端异常
-         * @param serverException 服务端异常
-         */
-        @Override
-        public void onFailure(AudioRecognizeRequest request, final ClientException clientException, final ServerException serverException) {
-            if (clientException!=null) {
-                AAILogger.info(logger, "onFailure..:"+clientException.toString());
-            }
-            if (serverException!=null) {
-                AAILogger.info(logger, "onFailure..:"+serverException.toString());
-            }
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-
-                    if (clientException!=null) {
-                        recognizeState.setText("识别状态：失败,  "+clientException.toString());
-                        AAILogger.info(logger, "识别状态：失败,  "+clientException.toString());
-                    } else if (serverException!=null) {
-                        recognizeState.setText("识别状态：失败,  "+serverException.toString());
-                    }
-                }
-            });
-        }
-    };
+//    private void initTX() {
+//        AudioRecognizeRequest.Builder builder = new AudioRecognizeRequest.Builder();
+//        // 初始化识别请求
+//        final AudioRecognizeRequest audioRecognizeRequest = builder
+////                        .pcmAudioDataSource(new AudioRecordDataSource()) // 设置数据源
+//                .pcmAudioDataSource(new AudioRecordDataSource()) // 设置数据源
+//                //.templateName(templateName) // 设置模板
+////                        .setHotWordId("")//热词 id。用于调用对应的热词表，如果在调用语音识别服务时，不进行单独的热词 id 设置，自动生效默认热词；如果进行了单独的热词 id 设置，那么将生效单独设置的热词 id。
+//                .build();
+//
+//        // 自定义识别配置
+//        final AudioRecognizeConfiguration audioRecognizeConfiguration = new AudioRecognizeConfiguration.Builder()
+//                .minAudioFlowSilenceTime(2000) // 语音流识别时的间隔时间
+//                .minVolumeCallbackTime(80) // 音量回调时间
+//                .sensitive(2.5f)
+//                .build();
+//
+//        credentialProvider = new LocalCredentialProvider("SdXCagX8WKyRny3sXxB9uVq32kGSTYWF");
+//        try {
+//            aaiClient = new AAIClient(MainActivity.this, 1259627588, "SdXCagX8WKyRny3sXxB9uVq32kGSTYWF", credentialProvider);
+//        } catch (ClientException e) {
+//            e.printStackTrace();
+//            Log.e("wqs初始化", "initTX: " + e.getMessage());
+//        }
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                aaiClient.startAudioRecognize(audioRecognizeRequest, audioRecognizeResultlistener,
+//                        audioRecognizeStateListener, audioRecognizeTimeoutListener,
+//                        audioRecognizeConfiguration);
+//
+//            }
+//        }).start();
+//
+//    }
+//
+//
+//    // 识别结果回调监听器
+//    final AudioRecognizeResultListener audioRecognizeResultlistener = new AudioRecognizeResultListener() {
+//
+//        boolean dontHaveResult = true;
+//
+//        /**
+//         * 返回分片的识别结果
+//         * @param request 相应的请求
+//         * @param result 识别结果
+//         * @param seq 该分片所在语音流的序号 (0, 1, 2...)
+//         */
+//        @Override
+//        public void onSliceSuccess(AudioRecognizeRequest request, AudioRecognizeResult result, int seq) {
+//
+//            if (dontHaveResult && !TextUtils.isEmpty(result.getText())) {
+//                dontHaveResult = false;
+//                Date date=new Date();
+//                DateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+//                String time=format.format(date);
+//                String message = String.format("voice flow order = %d, receive first response in %s, result is = %s", seq, time, result.getText());
+//                Log.i(PERFORMANCE_TAG, message);
+//            }
+//
+//            AAILogger.info(logger, "分片on slice success..");
+//            AAILogger.info(logger, "分片slice seq = {}, voiceid = {}, result = {}", seq, result.getVoiceId(), result.getText());
+//            resMap.put(String.valueOf(seq), result.getText());
+//            final String msg = buildMessage(resMap);
+//            AAILogger.info(logger, "分片slice msg="+msg);
+//            handler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    recognizeResult.setText(msg);
+//                }
+//            });
+//
+//        }
+//
+//        /**
+//         * 返回语音流的识别结果
+//         * @param request 相应的请求
+//         * @param result 识别结果
+//         * @param seq 该语音流的序号 (1, 2, 3...)
+//         */
+//        @Override
+//        public void onSegmentSuccess(AudioRecognizeRequest request, AudioRecognizeResult result, int seq) {
+//            dontHaveResult = true;
+//            AAILogger.info(logger, "语音流on segment success");
+//            AAILogger.info(logger, "语音流segment seq = {}, voiceid = {}, result = {}", seq, result.getVoiceId(), result.getText());
+//            resMap.put(String.valueOf(seq), result.getText());
+//            final String msg = buildMessage(resMap);
+//            AAILogger.info(logger, "语音流segment msg="+msg);
+//            handler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    recognizeResult.setText(msg);
+//                }
+//            });
+//        }
+//
+//        /**
+//         * 识别结束回调，返回所有的识别结果
+//         * @param request 相应的请求
+//         * @param result 识别结果
+//         */
+//        @Override
+//        public void onSuccess(AudioRecognizeRequest request, String result) {
+//            AAILogger.info(logger, "识别结束, onSuccess..");
+//            AAILogger.info(logger, "识别结束, result = {}", result);
+//        }
+//
+//        /**
+//         * 识别失败
+//         * @param request 相应的请求
+//         * @param clientException 客户端异常
+//         * @param serverException 服务端异常
+//         */
+//        @Override
+//        public void onFailure(AudioRecognizeRequest request, final ClientException clientException, final ServerException serverException) {
+//            if (clientException!=null) {
+//                AAILogger.info(logger, "onFailure..:"+clientException.toString());
+//            }
+//            if (serverException!=null) {
+//                AAILogger.info(logger, "onFailure..:"+serverException.toString());
+//            }
+//            handler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//
+//                    if (clientException!=null) {
+//                        recognizeState.setText("识别状态：失败,  "+clientException.toString());
+//                        AAILogger.info(logger, "识别状态：失败,  "+clientException.toString());
+//                    } else if (serverException!=null) {
+//                        recognizeState.setText("识别状态：失败,  "+serverException.toString());
+//                    }
+//                }
+//            });
+//        }
+//    };
 
 }
 
