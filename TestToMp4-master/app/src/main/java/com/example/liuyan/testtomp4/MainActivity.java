@@ -2,6 +2,7 @@ package com.example.liuyan.testtomp4;
 
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
@@ -35,12 +36,15 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     int height = 720;
     public static MyClass myClass;
 
+    public static Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //申请权限
         applyPermission();
+        context = this;
         //判断手机支持的编码格式
         checkAVFormat();
         surfaceView = (SurfaceView) findViewById(R.id.surface_view);

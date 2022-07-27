@@ -72,7 +72,7 @@ public class MediaMuxerThread extends Thread {
 
     //混合器初始化，但是未开始混合
     private void readyStart() throws IOException {
-        readyStart(fileSwapHelper.getFilePath());
+        readyStart(fileSwapHelper.mp4FilePath());
     }
     private void readyStart(String filePath) throws IOException {
         isExit = false;
